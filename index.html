@@ -24,55 +24,68 @@
   </style>
 </head>
 <body>
-  <div id="root" class="full">
-    <!-- content will be injected by JS -->
-  </div>
+  <div id="root" class="full"></div>
 
   <script>
-(function () {
-  const allowedUrl = 'https://hackergod00001.github.io/Resume/';
-  const pdfViewerUrl = 'https://docs.google.com/gview?url=https://github.com/hackergod00001/Resume/raw/master/resume.pdf&embedded=true';
+    (function () {
+      // ✅ The GitHub Pages URL where this should work
+      const allowedUrl = 'https://hackergod00001.github.io/Resume/';
+      
+      // ✅ Direct PDF file (using raw link, not blob)
+      const pdfUrl = 'https://github.com/hackergod00001/Resume/raw/master/resume.pdf';
 
-  function showPdf() {
-    const iframe = document.createElement('iframe');
-    iframe.src = pdfViewerUrl;
-    iframe.title = "Upmanyu's Resume (PDF)";
-    iframe.allow = "fullscreen";
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    document.getElementById('root').innerHTML = '';
-    document.getElementById('root').appendChild(iframe);
-  }
+      // ---- Show the PDF directly in an iframe ----
+      function showPdf() {
+        const iframe = document.createElement('iframe');
+        iframe.src = pdfUrl; // load directly
+        iframe.title = "Upmanyu's Resume (PDF)";
+        iframe.allow = "fullscreen";
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        const root = document.getElementById('root');
+        root.innerHTML = '';
+        root.appendChild(iframe);
+      }
 
-  function showBlockedMessage() {
-    const root = document.getElementById('root');
-    root.innerHTML = `
-      <div class="message">
-        <h2>Resume unavailable</h2>
-        <p>This page will only open the PDF when accessed from <strong>${allowedUrl}</strong>.</p>
-        <p>If you'd like to view it now, click below.</p>
-        <a class="btn" href="${allowedUrl}" target="_blank" rel="noopener noreferrer">Open GitHub Page</a>
-      </div>
-    `;
-  }
+      // ---- Show a message if access is not allowed ----
+      function showBlockedMessage() {
+        const root = document.getElementById('root');
+        root.innerHTML = '';
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message';
+        wrapper.innerHTML = `
+          <h2>Resume Unavailable</h2>
+          <p>This resume can only be viewed from <strong>${allowedUrl}</strong>.</p>
+          <p>If you reached this page directly, please open it from the GitHub link below.</p>
+        `;
+        const goButton = document.createElement('a');
+        goButton.className = 'btn';
+        goButton.href = allowedUrl;
+        goButton.target = '_blank';
+        goButton.rel = 'noopener noreferrer';
+        goButton.textContent = 'Open GitHub Profile';
+        wrapper.appendChild(goButton);
 
-  try {
-    const ref = document.referrer || '';
-    const loc = window.location.href || '';
-    const fromAllowedReferrer = ref.includes('hackergod00001.github.io/Resume');
-    const isAllowedLocation = loc.includes('hackergod00001.github.io/Resume');
+        root.appendChild(wrapper);
+      }
 
-    if (fromAllowedReferrer || isAllowedLocation) {
-      showPdf();
-    } else {
-      showBlockedMessage();
-    }
-  } catch (e) {
-    console.error(e);
-    showBlockedMessage();
-  }
-})();
-</script>
+      // ---- Allow only when on or referred from your GitHub Pages site ----
+      try {
+        const ref = document.referrer || '';
+        const loc = window.location.href || '';
+        const fromAllowedReferrer = ref.includes('hackergod00001.github.io/Resume');
+        const isAllowedLocation = loc.includes('hackergod00001.github.io/Resume');
 
+        if (fromAllowedReferrer || isAllowedLocation) {
+          showPdf();
+        } else {
+          showBlockedMessage();
+        }
+      } catch (e) {
+        console.error('Embed check failed:', e);
+        showBlockedMessage();
+      }
+    })();
+  </script>
 </body>
 </html>
