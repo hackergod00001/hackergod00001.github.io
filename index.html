@@ -1,10 +1,104 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html lang="en" style="width:100%; height:100%;">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta charset="utf-8" />
   <title>Upmanyu's Resume</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    html,body { width:100%; height:100%; margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .full { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+    .message { text-align:center; max-width:720px; padding:24px; }
+    .btn {
+      display:inline-block;
+      margin-top:12px;
+      padding:10px 16px;
+      border-radius:8px;
+      border:1px solid #0b66ff;
+      background:#0b66ff;
+      color:#fff;
+      text-decoration:none;
+      font-weight:600;
+    }
+    .btn-secondary { background:transparent; color:#0b66ff; border-color:#0b66ff; }
+    iframe { width:100%; height:100%; border:0; }
+  </style>
 </head>
-  <body style="width:100%; height:100%; margin:0;">
-    <iframe src="https://docs.google.com/gview?url=https://github.com/hackergod00001/Resume/blob/master/Upmanyu_Jha_Resume_v17.pdf&embedded=true" style="width:100%; height:100%;" frameborder="0"></iframe>
-  </body>
+<body>
+  <div id="root" class="full">
+    <!-- content will be injected by JS -->
+  </div>
+
+  <script>
+    (function () {
+      // The GitHub URL you specified
+      const allowedUrl = 'https://github.com/hackergod00001/';
+      // The PDF viewer URL you used (keeps your original gview usage)
+      const pdfViewerUrl = 'https://docs.google.com/gview?url=https://github.com/hackergod00001/Resume/blob/master/resume.pdf&embedded=true';
+
+      // A helper to create the iframe
+      function showPdf() {
+        const iframe = document.createElement('iframe');
+        iframe.src = pdfViewerUrl;
+        iframe.title = "Upmanyu's Resume (PDF)";
+        iframe.allow = "fullscreen";
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        const root = document.getElementById('root');
+        root.innerHTML = '';
+        root.appendChild(iframe);
+      }
+
+      // A fallback UI when access is not allowed
+      function showBlockedMessage() {
+        const root = document.getElementById('root');
+        root.innerHTML = '';
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message';
+        wrapper.innerHTML = `
+          <h2>Resume unavailable</h2>
+          <p>This page will only open the PDF when accessed from the GitHub profile <strong>${allowedUrl}</strong>.</p>
+          <p>If you'd like to view the PDF now, click the button below to go to that GitHub page.</p>
+        `;
+        const goButton = document.createElement('a');
+        goButton.className = 'btn';
+        goButton.href = allowedUrl;
+        goButton.target = '_blank';
+        goButton.rel = 'noopener noreferrer';
+        goButton.textContent = 'Open GitHub profile';
+        wrapper.appendChild(goButton);
+
+        const openDirect = document.createElement('a');
+        openDirect.className = 'btn btn-secondary';
+        openDirect.style.marginLeft = '12px';
+        openDirect.href = pdfViewerUrl;
+        openDirect.target = '_blank';
+        openDirect.rel = 'noopener noreferrer';
+        openDirect.textContent = 'Open PDF (if you have permission)';
+        wrapper.appendChild(openDirect);
+
+        root.appendChild(wrapper);
+      }
+
+      // Policy: allow embedding only when either:
+      // 1) document.referrer begins with allowedUrl (user clicked from that GitHub page), OR
+      // 2) the current page's URL is the allowedUrl (if you host this page on that path)
+      try {
+        const ref = document.referrer || '';
+        const loc = window.location.href || '';
+        const fromAllowedReferrer = ref.startsWith(allowedUrl);
+        const isAllowedLocation = loc.startsWith(allowedUrl);
+
+        if (fromAllowedReferrer || isAllowedLocation) {
+          showPdf();
+        } else {
+          showBlockedMessage();
+        }
+      } catch (e) {
+        // Fail-safe: if anything goes wrong, show the blocked message
+        console.error('Embed check failed:', e);
+        showBlockedMessage();
+      }
+    })();
+  </script>
+</body>
 </html>
