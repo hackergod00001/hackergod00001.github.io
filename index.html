@@ -29,76 +29,50 @@
   </div>
 
   <script>
-    (function () {
-      // The GitHub URL you specified
-      const allowedUrl = 'https://hackergod00001.github.io/Resume/';
-      // The PDF viewer URL you used (keeps your original gview usage)
-      const pdfViewerUrl = 'https://docs.google.com/gview?url=https://github.com/hackergod00001/Resume/blob/master/resume.pdf&embedded=true';
+(function () {
+  const allowedUrl = 'https://hackergod00001.github.io/Resume/';
+  const pdfViewerUrl = 'https://docs.google.com/gview?url=https://github.com/hackergod00001/Resume/raw/master/resume.pdf&embedded=true';
 
-      // A helper to create the iframe
-      function showPdf() {
-        const iframe = document.createElement('iframe');
-        iframe.src = pdfViewerUrl;
-        iframe.title = "Upmanyu's Resume (PDF)";
-        iframe.allow = "fullscreen";
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        const root = document.getElementById('root');
-        root.innerHTML = '';
-        root.appendChild(iframe);
-      }
+  function showPdf() {
+    const iframe = document.createElement('iframe');
+    iframe.src = pdfViewerUrl;
+    iframe.title = "Upmanyu's Resume (PDF)";
+    iframe.allow = "fullscreen";
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    document.getElementById('root').innerHTML = '';
+    document.getElementById('root').appendChild(iframe);
+  }
 
-      // A fallback UI when access is not allowed
-      function showBlockedMessage() {
-        const root = document.getElementById('root');
-        root.innerHTML = '';
-        const wrapper = document.createElement('div');
-        wrapper.className = 'message';
-        wrapper.innerHTML = `
-          <h2>Resume unavailable</h2>
-          <p>This page will only open the PDF when accessed from the GitHub profile <strong>${allowedUrl}</strong>.</p>
-          <p>If you'd like to view the PDF now, click the button below to go to that GitHub page.</p>
-        `;
-        const goButton = document.createElement('a');
-        goButton.className = 'btn';
-        goButton.href = allowedUrl;
-        goButton.target = '_blank';
-        goButton.rel = 'noopener noreferrer';
-        goButton.textContent = 'Open GitHub profile';
-        wrapper.appendChild(goButton);
+  function showBlockedMessage() {
+    const root = document.getElementById('root');
+    root.innerHTML = `
+      <div class="message">
+        <h2>Resume unavailable</h2>
+        <p>This page will only open the PDF when accessed from <strong>${allowedUrl}</strong>.</p>
+        <p>If you'd like to view it now, click below.</p>
+        <a class="btn" href="${allowedUrl}" target="_blank" rel="noopener noreferrer">Open GitHub Page</a>
+      </div>
+    `;
+  }
 
-        const openDirect = document.createElement('a');
-        openDirect.className = 'btn btn-secondary';
-        openDirect.style.marginLeft = '12px';
-        openDirect.href = pdfViewerUrl;
-        openDirect.target = '_blank';
-        openDirect.rel = 'noopener noreferrer';
-        openDirect.textContent = 'Open PDF (if you have permission)';
-        wrapper.appendChild(openDirect);
+  try {
+    const ref = document.referrer || '';
+    const loc = window.location.href || '';
+    const fromAllowedReferrer = ref.includes('hackergod00001.github.io/Resume');
+    const isAllowedLocation = loc.includes('hackergod00001.github.io/Resume');
 
-        root.appendChild(wrapper);
-      }
+    if (fromAllowedReferrer || isAllowedLocation) {
+      showPdf();
+    } else {
+      showBlockedMessage();
+    }
+  } catch (e) {
+    console.error(e);
+    showBlockedMessage();
+  }
+})();
+</script>
 
-      // Policy: allow embedding only when either:
-      // 1) document.referrer begins with allowedUrl (user clicked from that GitHub page), OR
-      // 2) the current page's URL is the allowedUrl (if you host this page on that path)
-      try {
-        const ref = document.referrer || '';
-        const loc = window.location.href || '';
-        const fromAllowedReferrer = ref.startsWith(allowedUrl);
-        const isAllowedLocation = loc.startsWith(allowedUrl);
-
-        if (fromAllowedReferrer || isAllowedLocation) {
-          showPdf();
-        } else {
-          showBlockedMessage();
-        }
-      } catch (e) {
-        // Fail-safe: if anything goes wrong, show the blocked message
-        console.error('Embed check failed:', e);
-        showBlockedMessage();
-      }
-    })();
-  </script>
 </body>
 </html>
